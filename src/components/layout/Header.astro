@@ -1,0 +1,162 @@
+---
+import { nav, site } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+const initials = site.name
+  .split(' ')
+  .map((w) => w[0])
+  .join('')
+  .slice(0, 2);
+---
+<header class="fixed inset-x-0 top-0 z-50" data-header>
+  <div class="container-page">
+    <nav
+      class="nav-shell relative mt-3 flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 md:px-4 md:py-3"
+      aria-label="Primary"
+      data-nav
+    >
+      <a href="/" class="group flex items-center gap-2.5 rounded-lg pr-2 font-semibold">
+        <span
+          class="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-white shadow-[inset_0_1px_0_0_oklch(1_0_0/0.3),0_4px_12px_-4px_oklch(0.4_0.15_275/0.5)] transition-transform duration-300 group-hover:scale-105"
+          aria-hidden="true"
+        >{initials}</span>
+        <span class="hidden text-[0.95rem] tracking-tight sm:inline">{site.name}</span>
+      </a>
+
+      <ul class="hidden items-center gap-0.5 md:flex" data-navlinks>
+        {nav.map((item) => {
+          const active = item.href === path;
+          // section id for scroll-spy (only for /#anchors)
+          const section = item.href.startsWith('/#') ? item.href.slice(2) : '';
+          return (
+            <li>
+              <a
+                href={item.href}
+                data-navlink
+                data-section={section}
+                class:list={[
+                  'nav-link relative rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:text-text',
+                  active ? 'text-text is-active' : 'text-text-muted',
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-cmd-open
+          class="hidden items-center gap-2 rounded-lg border border-border bg-surface/70 px-2.5 py-1.5 text-xs text-text-muted transition-all hover:border-border-strong hover:text-text hover:shadow-[var(--shadow-sm)] sm:flex"
+          aria-label="Open command palette"
+        >
+          <Icon name="search" size={14} />
+          <span>Search</span>
+          <kbd class="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] leading-none">⌘K</kbd>
+        </button>
+        <button
+          type="button"
+          data-cmd-open
+          class="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-text-muted transition-colors hover:text-text sm:hidden"
+          aria-label="Open command palette"
+        >
+          <Icon name="search" size={17} />
+        </button>
+        <ThemeToggle />
+      </div>
+
+      <!-- scroll-progress line hugging the bottom of the nav pill -->
+      <div class="pointer-events-none absolute inset-x-4 bottom-0 h-px overflow-hidden rounded-full">
+        <div
+          id="nav-progress"
+          class="h-full origin-left scale-x-0 bg-gradient-to-r from-brand-400 to-brand-600 transition-transform duration-75"
+        ></div>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="h-20" aria-hidden="true"></div>
+
+<style>
+  /* animated underline for nav links */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.2rem;
+    height: 1.5px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-brand-400), var(--color-brand-600));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover::after { transform: scaleX(1); }
+  .nav-link.is-active { color: var(--text); }
+  .nav-link.is-active::after { transform: scaleX(1); }
+</style>
+
+<script>
+  function setupHeader() {
+    const header = document.querySelector<HTMLElement>('[data-header]');
+    if (!header) return;
+
+    const progress = document.getElementById('nav-progress');
+
+    // Header stays static (always visible). Only scroll-shrink + progress fill.
+    let ticking = false;
+    const render = () => {
+      const y = window.scrollY;
+      header.toggleAttribute('data-scrolled', y > 20);
+      if (progress) {
+        const doc = document.documentElement;
+        const max = doc.scrollHeight - doc.clientHeight;
+        progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+      }
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(render);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    render();
+
+    // scroll-spy: highlight the nav link for the section in view
+    const links = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-navlink][data-section]')
+    ).filter((l) => l.dataset.section);
+    if (!links.length) return;
+
+    const byId = new Map(links.map((l) => [l.dataset.section, l]));
+    const sections = links
+      .map((l) => document.getElementById(l.dataset.section as string))
+      .filter((el): el is HTMLElement => !!el);
+    if (!sections.length) return;
+
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove('is-active'));
+            byId.get(entry.target.id)?.classList.add('is-active');
+          }
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+    );
+    sections.forEach((s) => spy.observe(s));
+  }
+
+  document.addEventListener('astro:page-load', setupHeader);
+  if (document.readyState !== 'loading') setupHeader();
+  else document.addEventListener('DOMContentLoaded', setupHeader);
+</script>

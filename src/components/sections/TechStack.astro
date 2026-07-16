@@ -1,0 +1,130 @@
+---
+import Section from '@components/ui/Section.astro';
+import SectionHeading from '@components/ui/SectionHeading.astro';
+import TechLogo from '@components/ui/TechLogo.astro';
+import { stack } from '@data/stack';
+
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+---
+<Section id="stack" spacing="tight" class="bg-bg-subtle border-y border-border">
+  <SectionHeading
+    eyebrow="Tech Stack"
+    title="Tools I reach for, grouped by the job."
+  />
+
+  <div class="mt-8" data-tabs data-reveal>
+    <!-- Tabs — horizontally scrollable on mobile -->
+    <div class="-mx-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div
+        role="tablist"
+        aria-label="Technology categories"
+        class="flex w-max gap-1.5 px-1 sm:w-auto"
+      >
+        {stack.map((group, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${slug(group.category)}`}
+            aria-controls={`panel-${slug(group.category)}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? '0' : '-1'}
+            data-tab
+            class="tech-tab whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-text-muted transition-all duration-200 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg-subtle"
+          >
+            {group.category}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Panels -->
+    <div class="relative mt-6">
+      {stack.map((group, i) => (
+        <div
+          role="tabpanel"
+          id={`panel-${slug(group.category)}`}
+          aria-labelledby={`tab-${slug(group.category)}`}
+          data-panel
+          hidden={i !== 0}
+          class="tech-panel"
+        >
+          <ul class="grid gap-3 sm:grid-cols-2">
+            {group.items.map((tech) => (
+              <li class="flex items-center gap-3 rounded-xl border border-border bg-surface p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-500/50 hover:shadow-[var(--shadow-sm)]">
+                <TechLogo logo={tech.logo} name={tech.name} size={22} />
+                <span class="min-w-0">
+                  <span class="block truncate text-sm font-medium">{tech.name}</span>
+                  <span class="block truncate text-xs text-text-faint">{tech.note}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .tech-tab[aria-selected='true'] {
+    color: #fff;
+    background-image: linear-gradient(
+      135deg,
+      var(--color-brand-400),
+      var(--color-brand-600)
+    );
+    box-shadow: 0 6px 16px -6px color-mix(in oklab, var(--color-brand-500) 55%, transparent);
+  }
+
+  /* fade + slide in when a panel becomes active */
+  .tech-panel:not([hidden]) {
+    animation: tech-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes tech-panel-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tech-panel:not([hidden]) { animation: none; }
+  }
+</style>
+
+<script>
+  function setupTechTabs() {
+    document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+      if (root.dataset.wired) return;
+      root.dataset.wired = '1';
+
+      const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+      const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+
+      const activate = (index: number, focus = true) => {
+        tabs.forEach((tab, i) => {
+          const selected = i === index;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          panels[i].hidden = !selected;
+        });
+        if (focus) tabs[index].focus();
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => activate(i, false));
+        tab.addEventListener('keydown', (e) => {
+          let next = i;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % tabs.length;
+          else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + tabs.length) % tabs.length;
+          else if (e.key === 'Home') next = 0;
+          else if (e.key === 'End') next = tabs.length - 1;
+          else return;
+          e.preventDefault();
+          activate(next);
+        });
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupTechTabs);
+  if (document.readyState !== 'loading') setupTechTabs();
+  else document.addEventListener('DOMContentLoaded', setupTechTabs);
+</script>

@@ -1,0 +1,54 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/sections/Hero.astro';
+import About from '@components/sections/About.astro';
+import TechStack from '@components/sections/TechStack.astro';
+import Experience from '@components/sections/Experience.astro';
+import Projects from '@components/sections/Projects.astro';
+import Highlights from '@components/sections/Highlights.astro';
+import AiDevelopment from '@components/sections/AiDevelopment.astro';
+import Contact from '@components/sections/Contact.astro';
+import { site, socials } from '@data/site';
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role,
+  description: site.description,
+  email: `mailto:${site.email}`,
+  url: site.url,
+  sameAs: socials.filter((s) => s.icon !== 'mail').map((s) => s.href),
+  knowsAbout: [
+    'Laravel',
+    'PHP',
+    'React.js',
+    'Next.js',
+    'TypeScript',
+    'MySQL',
+    'PostgreSQL',
+    'Redis',
+    'Docker',
+    'Multi-tenant SaaS',
+    'Software Architecture',
+  ],
+};
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: site.url,
+};
+---
+<BaseLayout jsonLd={[personLd, websiteLd]}>
+  <Hero />
+  <About />
+  <TechStack />
+  <Experience />
+  <div class="container-page"><hr class="separator" /></div>
+  <Projects />
+  <Highlights />
+  <AiDevelopment />
+  <Contact />
+</BaseLayout>

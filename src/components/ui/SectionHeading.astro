@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  align?: 'left' | 'center';
+}
+const { eyebrow, title, description, align = 'left' } = Astro.props;
+const alignCls = align === 'center' ? 'items-center text-center mx-auto' : 'items-start';
+---
+<div class={`flex flex-col gap-4 max-w-2xl ${alignCls}`} data-reveal>
+  {eyebrow && (
+    <span class="section-eyebrow">
+      <Icon name="spark" size={14} />
+      {eyebrow}
+    </span>
+  )}
+  <h2 class="text-3xl md:text-4xl lg:text-5xl font-semibold leading-[1.05]">
+    {title}
+  </h2>
+  {description && (
+    <p class="text-base md:text-lg text-text-muted leading-relaxed">{description}</p>
+  )}
+</div>

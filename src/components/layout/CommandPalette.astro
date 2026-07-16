@@ -1,0 +1,99 @@
+---
+import { nav, socials, site } from '@data/site';
+import Icon from '@components/ui/Icon.astro';
+
+interface CmdItem {
+  label: string;
+  keywords: string;
+  icon: string;
+  group: string;
+  href?: string;
+  action?: string;
+}
+
+const items: CmdItem[] = [
+  { label: 'Home', keywords: 'home top start intro', icon: 'home', group: 'Navigate', href: '/' },
+  ...nav.map((n) => ({
+    label: n.label,
+    keywords: `${n.label} section jump`,
+    icon: 'arrowRight',
+    group: 'Navigate',
+    href: n.href,
+  })),
+  { label: 'Toggle theme', keywords: 'theme dark light mode appearance', icon: 'moon', group: 'Actions', action: 'toggle-theme' },
+  { label: 'Download Resume', keywords: 'resume cv download pdf', icon: 'resume', group: 'Actions', href: site.resumeUrl },
+  ...socials.map((s) => ({
+    label: s.label,
+    keywords: `${s.label} ${s.handle} social contact link`,
+    icon: s.icon,
+    group: 'Connect',
+    href: s.href,
+  })),
+];
+
+const groups = ['Navigate', 'Actions', 'Connect'];
+---
+<div
+  id="command-palette"
+  hidden
+  class="fixed inset-0 z-[80] flex items-start justify-center px-4 pt-[12vh] opacity-0 transition-opacity duration-200 [&.is-open]:opacity-100"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Command palette"
+>
+  <div data-cmd-backdrop class="absolute inset-0 bg-black/45 backdrop-blur-sm"></div>
+
+  <div
+    class="relative w-full max-w-xl translate-y-2 overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl transition-transform duration-200 [.is-open_&]:translate-y-0"
+  >
+    <div class="flex items-center gap-3 border-b border-border px-4">
+      <Icon name="search" size={18} class="text-text-faint" />
+      <input
+        id="cmd-input"
+        type="text"
+        placeholder="Type a command or search…"
+        autocomplete="off"
+        spellcheck="false"
+        class="w-full bg-transparent py-4 text-[0.95rem] text-text placeholder:text-text-faint focus:outline-none"
+      />
+      <kbd class="rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] text-text-faint">ESC</kbd>
+    </div>
+
+    <div id="cmd-list" class="max-h-[52vh] overflow-y-auto p-2">
+      {groups.map((group) => (
+        <div class="cmd-group">
+          <p class="px-3 pb-1 pt-3 text-[11px] font-medium uppercase tracking-wider text-text-faint">{group}</p>
+          {items.filter((i) => i.group === group).map((item) => (
+            <a
+              data-cmd-item
+              data-keywords={item.keywords}
+              data-href={item.href}
+              data-action={item.action}
+              href={item.href ?? '#'}
+              class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-text-muted transition-colors [&.is-active]:bg-surface-2 [&.is-active]:text-text"
+            >
+              <span class="grid h-7 w-7 place-items-center rounded-md border border-border bg-surface-2 text-text-muted">
+                <Icon name={item.icon} size={15} />
+              </span>
+              <span class="flex-1">{item.label}</span>
+              <Icon name="arrowUpRight" size={14} class="opacity-0 [.is-active_&]:opacity-60" />
+            </a>
+          ))}
+        </div>
+      ))}
+      <p id="cmd-empty" hidden class="px-3 py-8 text-center text-sm text-text-faint">
+        No results.
+      </p>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-border px-4 py-2.5 text-[11px] text-text-faint">
+      <span class="flex items-center gap-1.5">
+        <Icon name="command" size={13} /> Command palette
+      </span>
+      <span class="flex gap-3">
+        <span><kbd class="font-mono">↑↓</kbd> navigate</span>
+        <span><kbd class="font-mono">↵</kbd> select</span>
+      </span>
+    </div>
+  </div>
+</div>

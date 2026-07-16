@@ -1,0 +1,17 @@
+---
+import Icon from '@components/ui/Icon.astro';
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+<button
+  type="button"
+  data-theme-toggle
+  class={`relative grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface text-text-muted transition-colors hover:border-border-strong hover:text-text ${className}`}
+  aria-label="Toggle color theme"
+  title="Toggle theme"
+>
+  <Icon name="sun" size={17} class="block dark:hidden" />
+  <Icon name="moon" size={17} class="hidden dark:block" />
+</button>

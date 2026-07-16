@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Button from '@components/ui/Button.astro';
+import AuroraBackground from '@components/sections/AuroraBackground.astro';
+---
+<BaseLayout title="Page not found" noindex>
+  <section class="relative isolate flex min-h-[70vh] items-center overflow-hidden">
+    <AuroraBackground />
+    <div class="container-page text-center">
+      <p class="section-eyebrow justify-center">Error 404</p>
+      <h1 class="mt-4 text-6xl font-semibold md:text-8xl gradient-text">Lost in routing.</h1>
+      <p class="mx-auto mt-5 max-w-md text-text-muted">
+        This page doesn’t exist — or it moved. Let’s get you back to solid ground.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <Button href="/" icon="home">Go home</Button>
+        <Button href="/#contact" variant="ghost" iconRight="arrowRight">Contact me</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
