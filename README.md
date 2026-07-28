@@ -1,3 +1,4 @@
+
 # Portfolio — Ashvini Kumar
 
 A fast, minimal, premium personal portfolio built with **Astro 7**, **Tailwind CSS 4**, and **TypeScript**. Static output, minimal JS, dark/light theme, command palette, blog with content collections, and full SEO.
