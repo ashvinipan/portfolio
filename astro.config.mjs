@@ -3,12 +3,11 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
-// Update this to your production domain before deploying.
-const SITE = 'https://example.com';
+const SITE = 'https://ashvinipan.github.io';
 
-// https://astro.build/config
 export default defineConfig({
   site: SITE,
+  base: '/portfolio', // <-- Add this
   trailingSlash: 'ignore',
   prefetch: {
     prefetchAll: true,
