@@ -3,6 +3,8 @@
  * Every section renders from this file — edit here, not in markup.
  */
 
+import { base } from '@utils/base';
+
 export interface NavItem {
   label: string;
   href: string;
@@ -27,7 +29,7 @@ export const site = {
   location: 'Pune, Maharashtra, India',
   openTo: 'Pune · Remote (India) · Remote (Global)',
   yearsExperience: '4.5+',
-  resumeUrl: '/resume.pdf',
+  resumeUrl: `${base}resume.pdf`,
   url: 'https://example.com',
   /** used for OG/meta descriptions site-wide */
   description:
@@ -48,11 +50,11 @@ export const openToRoles: string[] = [
 ];
 
 export const nav: NavItem[] = [
-  { label: 'About', href: '/#about' },
-  { label: 'Stack', href: '/#stack' },
-  { label: 'Experience', href: '/#experience' },
-  { label: 'Projects', href: '/#projects' },
-  { label: 'Contact', href: '/#contact' },
+  { label: 'About', href: `${base}#about` },
+  { label: 'Stack', href: `${base}#stack` },
+  { label: 'Experience', href: `${base}#experience` },
+  { label: 'Projects', href: `${base}#projects` },
+  { label: 'Contact', href: `${base}#contact` },
 ];
 
 export const socials: SocialLink[] = [

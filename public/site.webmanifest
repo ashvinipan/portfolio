@@ -2,11 +2,11 @@
   "name": "Ashvini Pangavhane — Full Stack Developer",
   "short_name": "Ashvini Pangavhane",
   "description": "Full Stack Developer specializing in Laravel, React, Next.js and multi-tenant SaaS.",
-  "start_url": "/",
+  "start_url": "/portfolio/",
   "display": "standalone",
   "background_color": "#0f0f16",
   "theme_color": "#7c6bf0",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "/portfolio/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }

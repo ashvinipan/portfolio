@@ -44,16 +44,11 @@ export const stack: TechGroup[] = [
     ],
   },
   {
-    category: 'DevOps',
+    category: 'Tools',
     items: [
       { name: 'Docker', logo: 'docker', note: 'Dev & prod parity' },
       { name: 'GitHub Actions', logo: 'githubactions', note: 'CI/CD' },
       { name: 'Git / GitHub', logo: 'github', note: 'Version control' },
-    ],
-  },
-  {
-    category: 'AI',
-    items: [
       { name: 'Claude', logo: 'claude', note: 'Reasoning & code' },
       { name: 'Cursor', logo: 'cursor', note: 'AI-native editor' },
       { name: 'Windsurf', logo: 'windsurf', note: 'Agentic flows' },

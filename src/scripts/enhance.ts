@@ -163,6 +163,52 @@ function setupCounters() {
   counters.forEach((c) => io.observe(c));
 }
 
+/**
+ * Same-page #anchor links: scroll manually instead of letting the View
+ * Transitions router intercept the click as a page navigation, which can
+ * swap/re-run page-load handlers mid-scroll and land at the wrong position.
+ *
+ * Scrolls to the section's actual content (skipping its own top padding)
+ * rather than its outer edge, so a nav click lands close to the heading
+ * instead of leaving a large gap under the fixed header. Normal scrolling
+ * through the page is unaffected — this only changes anchor-jump landing.
+ */
+let didCorrectInitialHash = false;
+
+function setupAnchorScroll() {
+  const header = document.querySelector<HTMLElement>('[data-header]');
+
+  const scrollToSection = (target: HTMLElement, behavior: ScrollBehavior) => {
+    const content = target.querySelector<HTMLElement>(':scope > .container-page > *') ?? target;
+    const headerHeight = header?.getBoundingClientRect().height ?? 0;
+    const y = content.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
+    window.scrollTo({ top: y, behavior });
+  };
+
+  document.querySelectorAll<HTMLAnchorElement>('a[href*="#"]').forEach((link) => {
+    if (link.dataset.wired) return;
+    const url = new URL(link.href, window.location.href);
+    if (url.pathname !== window.location.pathname || !url.hash) return;
+    link.dataset.wired = '1';
+    link.addEventListener('click', (e) => {
+      const target = document.getElementById(url.hash.slice(1));
+      if (!target) return;
+      e.preventDefault();
+      scrollToSection(target, 'smooth');
+      history.pushState(null, '', url.hash);
+    });
+  });
+
+  // Direct load / refresh with a #hash already in the URL: the browser's
+  // native jump lands on the section's outer edge (padding and all), so
+  // correct it once, instantly, after that native jump has happened.
+  if (!didCorrectInitialHash && location.hash) {
+    didCorrectInitialHash = true;
+    const target = document.getElementById(location.hash.slice(1));
+    if (target) requestAnimationFrame(() => scrollToSection(target, 'instant'));
+  }
+}
+
 function setupHeroFade() {
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   if (!hero) return;
@@ -198,6 +244,7 @@ function init() {
   setupCopyButtons();
   setupBackToTop();
   setupCounters();
+  setupAnchorScroll();
   setupHeroFade();
 }
 

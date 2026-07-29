@@ -1,5 +1,6 @@
 ---
 import { nav, site } from '@data/site';
+import { base } from '@utils/base';
 import Icon from '@components/ui/Icon.astro';
 import ThemeToggle from './ThemeToggle.astro';
 
@@ -17,7 +18,7 @@ const initials = site.name
       aria-label="Primary"
       data-nav
     >
-      <a href="/" class="group flex items-center gap-2.5 rounded-lg pr-2 font-semibold">
+      <a href={base} class="group flex items-center gap-2.5 rounded-lg pr-2 font-semibold">
         <span
           class="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-white shadow-[inset_0_1px_0_0_oklch(1_0_0/0.3),0_4px_12px_-4px_oklch(0.4_0.15_275/0.5)] transition-transform duration-300 group-hover:scale-105"
           aria-hidden="true"
@@ -28,8 +29,9 @@ const initials = site.name
       <ul class="hidden items-center gap-0.5 md:flex" data-navlinks>
         {nav.map((item) => {
           const active = item.href === path;
-          // section id for scroll-spy (only for /#anchors)
-          const section = item.href.startsWith('/#') ? item.href.slice(2) : '';
+          // section id for scroll-spy (only for #anchor links)
+          const hashIndex = item.href.indexOf('#');
+          const section = hashIndex !== -1 ? item.href.slice(hashIndex + 1) : '';
           return (
             <li>
               <a

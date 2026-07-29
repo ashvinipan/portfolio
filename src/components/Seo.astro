@@ -1,5 +1,6 @@
 ---
 import { site } from '@data/site';
+import { base } from '@utils/base';
 
 interface Props {
   title?: string;
@@ -16,7 +17,7 @@ interface Props {
 const {
   title,
   description = site.description,
-  image = '/og/default.svg',
+  image = `${base}og/default.svg`,
   type = 'website',
   jsonLd,
   noindex = false,

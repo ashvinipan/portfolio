@@ -4,66 +4,95 @@ import SectionHeading from '@components/ui/SectionHeading.astro';
 import Icon from '@components/ui/Icon.astro';
 import { projects } from '@data/projects';
 
-const featured = projects.filter((p) => p.featured);
+const [top, ...rest] = projects.filter((p) => p.featured);
 ---
 <Section id="projects">
   <SectionHeading
     eyebrow="Featured Projects"
     title="Selected work, with the reasoning behind it."
-    description="Not screenshots and stacks — the actual problem each project solved and how it was architected."
+    description="The actual problem each project solved, my role, and what I built — not just a stack list."
   />
 
-  <div class="mt-12 space-y-8">
-    {featured.map((project, i) => (
+  {top && (
+    <article
+      class="card card-hover group relative mt-12 overflow-hidden p-6 md:p-8"
+      data-reveal
+    >
+      <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand-500/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-70"></div>
+
+      <div class="relative flex flex-wrap items-center gap-2">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/15 to-brand-600/10 text-brand-500 dark:text-brand-300">
+          <Icon name={top.icon} size={20} />
+        </span>
+        <span class="chip">{top.year}</span>
+        <span class="chip">Featured</span>
+      </div>
+
+      <h3 class="relative mt-4 text-2xl font-semibold md:text-[1.75rem]">{top.title}</h3>
+      <p class="relative mt-1 text-brand-500 dark:text-brand-300">{top.tagline}</p>
+      <p class="relative mt-1 text-xs font-medium uppercase tracking-wide text-text-faint">{top.role}</p>
+      <p class="relative mt-3 max-w-2xl text-sm leading-relaxed text-text-muted">{top.description}</p>
+
+      <ul class="relative mt-5 grid gap-2 sm:grid-cols-2">
+        {top.features.slice(0, 6).map((f) => (
+          <li class="flex gap-2 text-sm leading-relaxed">
+            <Icon name="check" size={15} class="mt-0.5 shrink-0 text-brand-500 dark:text-brand-300" />
+            <span class="text-text-muted">{f}</span>
+          </li>
+        ))}
+      </ul>
+
+      <ul class="relative mt-5 flex flex-wrap gap-1.5">
+        {top.stack.map((t) => <li class="chip">{t}</li>)}
+      </ul>
+
+      {top.companyProject && (
+        <p class="relative mt-6 flex items-center gap-1.5 text-xs text-text-faint">
+          <Icon name="shield" size={14} /> Company project · private codebase
+        </p>
+      )}
+    </article>
+  )}
+
+  <div class="mt-8 grid gap-6 sm:grid-cols-2">
+    {rest.map((project, i) => (
       <article
-        class="card card-hover group grid overflow-hidden lg:grid-cols-2"
+        class="card card-hover group relative flex flex-col overflow-hidden p-5 md:p-6"
         data-reveal
         data-reveal-delay={String(i * 60)}
       >
-        <!-- media -->
-        <div class:list={[
-          'relative min-h-64 overflow-hidden bg-gradient-to-br from-surface-2 to-bg-subtle',
-          i % 2 === 1 ? 'lg:order-2' : '',
-        ]}>
-          <img
-            src={project.image}
-            alt={project.imageAlt}
-            width="720"
-            height="480"
-            loading="lazy"
-            decoding="async"
-            class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-          />
-          <span class="absolute left-4 top-4 chip glass">{project.year}</span>
+        <div class="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-70"></div>
+
+        <div class="relative flex flex-wrap items-center gap-2">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-brand-500/30 bg-gradient-to-br from-brand-500/15 to-brand-600/10 text-brand-500 dark:text-brand-300">
+            <Icon name={project.icon} size={18} />
+          </span>
+          <span class="chip text-[11px]">{project.year}</span>
         </div>
 
-        <!-- body -->
-        <div class="flex flex-col p-6 md:p-8">
-          <h3 class="text-xl font-semibold md:text-2xl">{project.title}</h3>
-          <p class="mt-1 text-brand-500 dark:text-brand-300">{project.tagline}</p>
-          <p class="mt-3 text-sm leading-relaxed text-text-muted">{project.description}</p>
+        <h3 class="relative mt-4 text-lg font-semibold">{project.title}</h3>
+        <p class="relative mt-1 text-sm text-brand-500 dark:text-brand-300">{project.tagline}</p>
+        <p class="relative mt-1 text-[11px] font-medium uppercase tracking-wide text-text-faint">{project.role}</p>
+        <p class="relative mt-3 text-sm leading-relaxed text-text-muted">{project.description}</p>
 
-          <dl class="mt-5 space-y-3 text-sm">
-            <div>
-              <dt class="font-medium text-text">Challenge</dt>
-              <dd class="mt-0.5 leading-relaxed text-text-muted">{project.challenge}</dd>
-            </div>
-            <div>
-              <dt class="font-medium text-text">Architecture</dt>
-              <dd class="mt-0.5 leading-relaxed text-text-muted">{project.architecture}</dd>
-            </div>
-          </dl>
+        <ul class="relative mt-4 space-y-1.5">
+          {project.features.slice(0, 6).map((f) => (
+            <li class="flex gap-2 text-sm leading-relaxed">
+              <Icon name="check" size={14} class="mt-0.5 shrink-0 text-brand-500 dark:text-brand-300" />
+              <span class="text-text-muted">{f}</span>
+            </li>
+          ))}
+        </ul>
 
-          <ul class="mt-5 flex flex-wrap gap-1.5">
-            {project.stack.map((t) => <li class="chip">{t}</li>)}
-          </ul>
+        <ul class="relative mt-4 flex flex-wrap gap-1.5">
+          {project.stack.map((t) => <li class="chip">{t}</li>)}
+        </ul>
 
-          {project.companyProject && (
-            <div class="mt-auto flex items-center gap-1.5 pt-6 text-xs text-text-faint">
-              <Icon name="shield" size={14} /> Company project · private codebase
-            </div>
-          )}
-        </div>
+        {project.companyProject && (
+          <p class="relative mt-5 flex items-center gap-1.5 text-xs text-text-faint">
+            <Icon name="shield" size={14} /> Company project · private codebase
+          </p>
+        )}
       </article>
     ))}
   </div>

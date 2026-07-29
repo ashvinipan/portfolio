@@ -1,5 +1,7 @@
+import { base } from '@utils/base';
+
 export const about = {
-  photo: '/images/image.jpeg',
+  photo: `${base}images/image.jpeg`,
   photoAlt: 'Portrait of Ashvini Pangavhane',
   paragraphs: [
     'I’m a full stack developer with 4.5+ years building multi-tenant SaaS — one codebase safely serving many organizations, each with its own data and permission rules.',
